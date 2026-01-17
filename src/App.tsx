@@ -11,6 +11,8 @@ import CareerMatch from "./pages/CareerMatch";
 import SkillGap from "./pages/SkillGap";
 import Roadmap from "./pages/Roadmap";
 import Impact from "./pages/Impact";
+import News from "./pages/News";
+import Article from "./pages/Article";
 import About from "./pages/About";
 import SentimentAnalysis from "./pages/SentimentAnalysis";
 import ChatBot from "./pages/ChatBot";
@@ -34,6 +36,8 @@ const App = () => (
               <Route path="/skill-gap" element={<SkillGap />} />
               <Route path="/roadmap" element={<Roadmap />} />
               <Route path="/impact" element={<Impact />} />
+              <Route path="/news" element={<News />} />
+              <Route path="/news/:id" element={<Article />} />
               <Route path="/about" element={<About />} />
               <Route path="/sentiment" element={<SentimentAnalysis />} />
               <Route path="/chatbot" element={<ChatBot />} />
