@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Target, TrendingUp, CheckCircle2, AlertCircle, ArrowRight, Briefcase, Code, Database, Cloud, Loader2 } from "lucide-react";
+import { Target, TrendingUp, CheckCircle2, AlertCircle, ArrowRight, Briefcase, Code, Database, Cloud, Loader2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { getCareerPaths, getResumeAnalysis, CareerPath, ResumeAnalysis } from "@/services/careerService";
@@ -87,15 +87,26 @@ const CareerMatch = () => {
 
   if (error || careerPaths.length === 0) {
     return (
-      <div className="min-h-screen pt-24 pb-16">
-        <div className="container mx-auto px-4 text-center">
-          <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-foreground mb-4">No Resume Data Found</h2>
-          <p className="text-muted-foreground mb-6">Please upload your resume first to see career matches.</p>
+      <div className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="container mx-auto px-4 text-center max-w-md"
+        >
+          <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+            <FileText className="w-10 h-10 text-muted-foreground" />
+          </div>
+          <h2 className="text-2xl font-bold text-foreground mb-4">Ready to find your match?</h2>
+          <p className="text-muted-foreground mb-8">
+            Upload your resume or link your LinkedIn profile to see personalized career matches in the Smart City ecosystem.
+          </p>
           <Link to="/upload">
-            <Button className="btn-forest">Upload Resume</Button>
+            <Button className="btn-forest px-8 py-6 text-lg rounded-2xl group">
+              Start Analysis
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </Link>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -103,6 +114,9 @@ const CareerMatch = () => {
   const topRole = careerPaths[0];
   const topRolePercentage = topRole.match_score;
   const TopIcon = iconMap[topRole.title] || Briefcase;
+
+  const analysisSource = resumeAnalysis?.metadata?.source || "Uploaded Data";
+  const sourceDetail = resumeAnalysis?.metadata?.filename || resumeAnalysis?.contact?.linkedin || "";
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -114,9 +128,18 @@ const CareerMatch = () => {
           transition={{ duration: 0.6 }}
           className="max-w-3xl mx-auto text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-leaf/20 mb-6">
-            <Target className="w-4 h-4 text-leaf" />
-            <span className="text-sm font-medium text-leaf">Match Found!</span>
+          <div className="flex flex-col items-center gap-3 mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-leaf/20">
+              <Target className="w-4 h-4 text-leaf" />
+              <span className="text-sm font-medium text-leaf">Analysis Complete</span>
+            </div>
+
+            {resumeAnalysis && (
+              <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-secondary/50 border border-border text-xs text-muted-foreground">
+                <span className="font-semibold">{analysisSource}:</span>
+                <span className="truncate max-w-[200px]">{sourceDetail}</span>
+              </div>
+            )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Your Career Matches

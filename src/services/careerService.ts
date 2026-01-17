@@ -41,6 +41,8 @@ export interface ResumeAnalysis {
         total_lines?: number;
         sections_found: string[];
         contact_info_found: boolean;
+        source?: string;
+        filename?: string;
     };
 }
 
