@@ -12,6 +12,8 @@ import SkillGap from "./pages/SkillGap";
 import Roadmap from "./pages/Roadmap";
 import Impact from "./pages/Impact";
 import About from "./pages/About";
+import SentimentAnalysis from "./pages/SentimentAnalysis";
+import ChatBot from "./pages/ChatBot";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,8 @@ const App = () => (
               <Route path="/roadmap" element={<Roadmap />} />
               <Route path="/impact" element={<Impact />} />
               <Route path="/about" element={<About />} />
+              <Route path="/sentiment" element={<SentimentAnalysis />} />
+              <Route path="/chatbot" element={<ChatBot />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

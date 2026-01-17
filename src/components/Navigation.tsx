@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info } from "lucide-react";
+import { Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info, MessageSquare, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
@@ -10,6 +10,8 @@ const navLinks = [
   { name: "Career Match", path: "/career-match", icon: Target },
   { name: "Skill Gap", path: "/skill-gap", icon: TrendingUp },
   { name: "Roadmap", path: "/roadmap", icon: Map },
+  { name: "Sentiment", path: "/sentiment", icon: ThumbsUp },
+  { name: "ChatBot", path: "/chatbot", icon: MessageSquare },
   { name: "About", path: "/about", icon: Info },
 ];
 
@@ -40,11 +42,10 @@ export const Navigation = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? "bg-secondary text-primary"
-                      : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
-                  }`}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
+                    ? "bg-secondary text-primary"
+                    : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -87,11 +88,10 @@ export const Navigation = () => {
                     key={link.path}
                     to={link.path}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                      isActive
-                        ? "bg-secondary text-primary"
-                        : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
-                    }`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
+                      ? "bg-secondary text-primary"
+                      : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     {link.name}
