@@ -31,9 +31,14 @@ export const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-leaf flex items-center justify-center">
-              <Leaf className="w-6 h-6 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-leaf flex items-center justify-center overflow-hidden">
+              <img
+                src="/logo.jpg"
+                alt="InsightEdge Logo"
+                className="w-6 h-6 object-contain"
+              />
             </div>
+
             <span className="text-xl font-bold text-gradient-forest">InsightEdge</span>
           </Link>
 
