@@ -367,7 +367,208 @@ async def career_chat(request: ChatRequest):
     return CareerAdviceResponse(answer=response, rag_used=False)
 
 
+# ============ Peer Learning Network ============
+
+# Simulated peer profiles for demo (in production, this would be a database)
+SIMULATED_PEERS = [
+    {
+        "id": "peer_001",
+        "pseudonym": "DataDriven_Dev",
+        "target_role": "Urban Data Scientist",
+        "skills": ["python", "sql", "data visualization", "statistics"],
+        "learning": ["machine learning", "gis", "urban analytics"],
+        "contact_preference": "LinkedIn",
+        "contact_value": "linkedin.com/in/datadriven-dev"
+    },
+    {
+        "id": "peer_002",
+        "pseudonym": "GeoTech_Guru",
+        "target_role": "GIS Analyst",
+        "skills": ["gis", "arcgis", "qgis", "remote sensing", "cartography"],
+        "learning": ["python", "machine learning", "data analysis"],
+        "contact_preference": "Email",
+        "contact_value": "geotech.guru@example.com"
+    },
+    {
+        "id": "peer_003",
+        "pseudonym": "SmartCity_Sam",
+        "target_role": "Smart City Analyst",
+        "skills": ["data analysis", "excel", "tableau", "public policy"],
+        "learning": ["python", "gis", "iot", "sql"],
+        "contact_preference": "LinkedIn",
+        "contact_value": "linkedin.com/in/smartcity-sam"
+    },
+    {
+        "id": "peer_004",
+        "pseudonym": "IoT_Innovator",
+        "target_role": "IoT Engineer (Smart Cities)",
+        "skills": ["iot", "sensors", "arduino", "mqtt", "networking"],
+        "learning": ["python", "cloud platforms", "data streaming"],
+        "contact_preference": "Email",
+        "contact_value": "iot.innovator@example.com"
+    },
+    {
+        "id": "peer_005",
+        "pseudonym": "Green_Grid",
+        "target_role": "Energy Systems Engineer",
+        "skills": ["electrical engineering", "smart grid", "power systems"],
+        "learning": ["python", "iot", "data analysis", "machine learning"],
+        "contact_preference": "LinkedIn",
+        "contact_value": "linkedin.com/in/green-grid"
+    },
+    {
+        "id": "peer_006",
+        "pseudonym": "Civic_Coder",
+        "target_role": "Civic Tech Developer",
+        "skills": ["javascript", "react", "node.js", "api development"],
+        "learning": ["python", "gis", "open data", "urban planning"],
+        "contact_preference": "Email",
+        "contact_value": "civic.coder@example.com"
+    },
+    {
+        "id": "peer_007",
+        "pseudonym": "Urban_ML",
+        "target_role": "Urban AI Engineer",
+        "skills": ["machine learning", "tensorflow", "computer vision", "deep learning"],
+        "learning": ["gis", "urban analytics", "smart city applications"],
+        "contact_preference": "LinkedIn",
+        "contact_value": "linkedin.com/in/urban-ml"
+    },
+    {
+        "id": "peer_008",
+        "pseudonym": "Sustain_Analyst",
+        "target_role": "Sustainability Analyst",
+        "skills": ["sustainability", "carbon footprint", "esg", "reporting"],
+        "learning": ["data analysis", "python", "gis", "visualization"],
+        "contact_preference": "Email",
+        "contact_value": "sustain.analyst@example.com"
+    },
+    {
+        "id": "peer_009",
+        "pseudonym": "Transit_Tech",
+        "target_role": "Transportation Systems Analyst",
+        "skills": ["traffic modeling", "simulation", "urban mobility"],
+        "learning": ["python", "gis", "machine learning", "data visualization"],
+        "contact_preference": "LinkedIn",
+        "contact_value": "linkedin.com/in/transit-tech"
+    },
+    {
+        "id": "peer_010",
+        "pseudonym": "Infra_Builder",
+        "target_role": "Smart Infrastructure Engineer",
+        "skills": ["civil engineering", "infrastructure", "systems design"],
+        "learning": ["iot", "smart grid", "python", "networking"],
+        "contact_preference": "Email",
+        "contact_value": "infra.builder@example.com"
+    }
+]
+
+
+def calculate_peer_match(user_skills: set, user_learning: set, peer: dict) -> dict:
+    """Calculate complementary match score between user and peer"""
+    peer_skills = set(s.lower() for s in peer["skills"])
+    peer_learning = set(s.lower() for s in peer["learning"])
+    
+    # What peer can teach user (peer has, user is learning/lacks)
+    peer_can_teach = peer_skills & user_learning
+    
+    # What user can teach peer (user has, peer is learning)
+    user_can_teach = user_skills & peer_learning
+    
+    # Bilateral value: both directions matter
+    if not peer_can_teach and not user_can_teach:
+        return None  # No complementary value
+    
+    # Score based on bilateral skill exchange potential
+    total_exchange = len(peer_can_teach) + len(user_can_teach)
+    max_possible = len(user_learning) + len(peer_learning)
+    raw_score = (total_exchange / max_possible) * 100 if max_possible > 0 else 0
+    
+    # Apply same scaling formula for consistency
+    final_score = 30 + (raw_score * 0.7)
+    
+    return {
+        "peer_id": peer["id"],
+        "pseudonym": peer["pseudonym"],
+        "target_role": peer["target_role"],
+        "they_can_teach": list(peer_can_teach)[:3],  # Top 3
+        "you_can_teach": list(user_can_teach)[:3],   # Top 3
+        "match_score": round(final_score, 1),
+        "contact_preference": peer["contact_preference"]
+    }
+
+
+@app.get("/peer-matches")
+async def get_peer_matches():
+    """Get peer learning matches based on complementary skills"""
+    
+    if not current_session["resume_data"]:
+        raise HTTPException(status_code=400, detail="No resume uploaded. Please upload a resume first.")
+    
+    user_skills = set(skill.lower() for skill in current_session["resume_data"].get("skills", []))
+    
+    # Infer what user might be learning from skill gaps
+    # Use the first career path's requirements as learning targets
+    user_learning = set()
+    for title, role_def in ROLE_DEFINITIONS.items():
+        for req in role_def["requirements"]:
+            if req.lower() not in user_skills:
+                user_learning.add(req.lower())
+    
+    # Calculate matches for all peers
+    matches = []
+    for peer in SIMULATED_PEERS:
+        match = calculate_peer_match(user_skills, user_learning, peer)
+        if match:
+            matches.append(match)
+    
+    # Sort by match score and return top 3
+    matches.sort(key=lambda x: x["match_score"], reverse=True)
+    top_matches = matches[:3]
+    
+    return {
+        "user_skills": list(current_session["resume_data"].get("skills", []))[:5],
+        "peers": top_matches,
+        "total_potential_peers": len(matches)
+    }
+
+
+class ConnectPeerRequest(BaseModel):
+    peer_id: str
+
+
+@app.post("/connect-peer")
+async def connect_with_peer(request: ConnectPeerRequest):
+    """Connect with a peer (reveals contact info)"""
+    
+    if not current_session["resume_data"]:
+        raise HTTPException(status_code=400, detail="No resume uploaded. Please upload a resume first.")
+    
+    # Find the peer
+    peer = next((p for p in SIMULATED_PEERS if p["id"] == request.peer_id), None)
+    
+    if not peer:
+        raise HTTPException(status_code=404, detail="Peer not found")
+    
+    # In production, this would:
+    # 1. Notify both users
+    # 2. Create a connection record
+    # 3. Possibly require mutual consent
+    
+    return {
+        "success": True,
+        "message": f"Connected with {peer['pseudonym']}!",
+        "peer": {
+            "pseudonym": peer["pseudonym"],
+            "target_role": peer["target_role"],
+            "contact_preference": peer["contact_preference"],
+            "contact_value": peer["contact_value"]
+        }
+    }
+
+
 # ============ Helper Functions ============
+
 
 def get_skill_recommendation(skill: str) -> Dict:
     """Get learning recommendation for a skill - Udemy + SWAYAM (India) links"""

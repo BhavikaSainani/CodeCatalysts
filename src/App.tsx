@@ -17,6 +17,7 @@ import News from "./pages/News";
 import Article from "./pages/Article";
 import About from "./pages/About";
 import ChatBot from "./pages/ChatBot";
+import PeerNetwork from "./pages/PeerNetwork";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,8 +46,10 @@ const App = () => (
                 <Route path="/news/:id" element={<Article />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/chatbot" element={<ChatBot />} />
+                <Route path="/peer-network" element={<PeerNetwork />} />
               </Route>
             </Route>
+
 
             {/* Unknown Routes */}
             <Route path="*" element={<NotFound />} />

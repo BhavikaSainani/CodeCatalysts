@@ -198,3 +198,62 @@ export async function sendChatMessage(question: string): Promise<ChatResponse> {
 
     return await response.json();
 }
+
+// ============ Peer Learning Network ============
+
+export interface PeerMatch {
+    peer_id: string;
+    pseudonym: string;
+    target_role: string;
+    they_can_teach: string[];
+    you_can_teach: string[];
+    match_score: number;
+    contact_preference: string;
+}
+
+export interface PeerMatchesResponse {
+    user_skills: string[];
+    peers: PeerMatch[];
+    total_potential_peers: number;
+}
+
+export interface PeerConnectionResponse {
+    success: boolean;
+    message: string;
+    peer: {
+        pseudonym: string;
+        target_role: string;
+        contact_preference: string;
+        contact_value: string;
+    };
+}
+
+// Get peer learning matches
+export async function getPeerMatches(): Promise<PeerMatchesResponse> {
+    const response = await fetch(`${CAREER_API_URL}/peer-matches`);
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to get peer matches');
+    }
+
+    return await response.json();
+}
+
+// Connect with a peer
+export async function connectWithPeer(peerId: string): Promise<PeerConnectionResponse> {
+    const response = await fetch(`${CAREER_API_URL}/connect-peer`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ peer_id: peerId }),
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to connect with peer');
+    }
+
+    return await response.json();
+}
