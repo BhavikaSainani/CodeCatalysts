@@ -1,84 +1,110 @@
-# InsightEdge 🌱
+# InsightEdge 
 
-> AI-Powered Career Advisor for Smart Cities Professionals
+> **AI-Powered Career Navigator for the Smart City Ecosystem**
 
-InsightEdge helps professionals discover career opportunities in the Smart Cities domain by analyzing resumes, identifying skill gaps, and providing personalized roadmaps.
-
-## ✨ Features
-
-- **Resume Upload & Analysis** - AI-powered parsing using FastAPI backend
-- **Career Match** - Find roles matching your skills
-- **Skill Gap Analysis** - Identify areas for improvement
-- **Personalized Roadmaps** - Step-by-step career progression
-- **Real-time News** - Live updates from Smart Cities industry (RSS feeds)
-- **Sentiment Analysis** - Analyze career-related content
-- **AI ChatBot** - Career advice with voice input support
-
-## 🛠️ Tech Stack
-
-| Frontend | Backend | ML/AI |
-|----------|---------|-------|
-| React + Vite | FastAPI (Python) | LangChain |
-| TypeScript | Uvicorn | RAG Pipeline |
-| Tailwind CSS | Firebase | Speech Recognition |
-| shadcn/ui | NewsAPI | PyMuPDF |
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- Python 3.10+
-- NewsAPI Key (optional, for live news)
-
-### 1. Frontend Setup
-```bash
-git clone https://github.com/BhavikaSainani/insightEdge.git
-cd insightEdge
-npm install
-```
-
-### 2. Backend Setup
-```bash
-cd career_api
-pip install -r requirements.txt
-python main.py  # Runs on port 8001
-```
-
-### 3. Environment Variables
-Create `.env` in the project root:
-```env
-VITE_NEWSAPI_KEY=your_newsapi_key_here
-```
-
-### 4. Run Development Server
-```bash
-npm run dev  # Frontend at http://localhost:8080
-```
-
-## 📁 Project Structure
-
-```
-insightEdge/
-├── src/
-│   ├── pages/           # React pages
-│   ├── components/      # UI components
-│   ├── lib/             # News & utility services
-│   └── services/        # API services
-├── career_api/          # FastAPI backend
-│   ├── main.py          # API endpoints
-│   └── utils/           # ML utilities
-└── public/              # Static assets
-```
-
-## 🌐 Deployment
-
-- **Frontend**: Deploy to Vercel or Netlify
-- **Backend**: Deploy to Railway, Render, or any Python host
-
-## 📄 License
-
-MIT License - Feel free to use for personal or commercial projects.
+InsightEdge is a premium career guidance platform specifically designed for professionals and students entering the **Smart Cities & Urban Technology** domain. It combines traditional resume parsing with modern AI intelligence to provide a holistic career growth experience.
 
 ---
 
-Built with 💚 for Smart City professionals
+## Key Features
+
+- **Multi-Source Entry**: Upload traditional **PDF Resumes** or link your **LinkedIn Profile** for instant analysis.
+- **Smart Career Match**: Discover 10+ specialized Smart City roles (e.g., Urban Data Scientist, GIS Analyst, IoT Engineer) with deterministic relevancy scoring.
+- **Skill Gap Visualization**: High-fidelity Radar charts comparing your current skills against industry-standard requirements.
+- **AI Career Chatbot**: A Gemini-powered companion for career advice, supporting both **Text and Voice** input.
+- **Real-Time News Hub**: Live industry updates aggregated from NewsAPI and curated Smart City RSS feeds.
+- **Learning Roadmaps**: Direct links to free Indian Government courses (**SWAYAM**) and specialized Udemy paths.
+
+---
+
+## Tech Stack
+
+### Frontend
+- **Framework**: React 18 (Vite) + TypeScript
+- **Styling**: Tailwind CSS + Framer Motion (Animations)
+- **Viz**: Recharts (Radar/Progress)
+
+### Backend Services (Dual-Stack)
+- **Career Backend**: FastAPI (Python) - *Resume parsing & Matching*
+- **AI Middleware**: Node.js (Express) - *Gemini AI integration*
+
+### AI & Data
+- **LLM**: Google Gemini 1.5/2.0
+- **Parsing**: PyMuPDF (fitz)
+- **External**: NewsAPI, SWAYAM/NPTEL API
+
+---
+
+## Setup & Local Development
+
+Follow these steps to get the full platform running on your machine.
+
+### 1. Clone & Install Dependencies
+```bash
+# Clone the repository
+git clone https://github.com/BhavikaSainani/insightEdge.git
+cd insightEdge
+
+# Install Frontend & Node dependencies
+npm install
+```
+
+### 2. Configure Environment Variables
+Create a `.env` file in the root directory:
+```env
+# AI Middleware (Node)
+GEMINI_API_KEY=AIzaSyCmHHEFcueKK_OTL87MjG-jP_T8YTpEzLs
+
+# Frontend (Vite)
+VITE_NEWSAPI_KEY=b196ecf403174c82857f0b691c6c119c
+```
+
+### 3. Start the Backend Services
+You need to run **two** backend servers for full functionality:
+
+**A. Python Career API (Port 8001)**
+```bash
+cd career_api
+pip install -r requirements.txt
+python main.py
+```
+
+**B. Node.js AI Server (Port 3001)**
+```bash
+# From the project root
+npm run dev:server
+# OR
+node server.ts
+```
+
+### 4. Start the Frontend
+```bash
+# From the project root
+npm run dev
+```
+Open [http://localhost:8080](http://localhost:8080) to view the app!
+
+---
+
+##  Test Credentials
+InsightEdge currently uses a local session-based approach and does not require a database login for the primary features. 
+- **User Access**: Guest access enabled by default.
+- **Mock Data**: For LinkedIn integration tests, you can use any valid `linkedin.com/in/...` URL.
+
+---
+
+##  Basic Error Handling
+
+| Issue | Solution |
+| :--- | :--- |
+| **"Could not connect to Career API"** | Ensure the Python server is running on port **8001**. |
+| **"AI Chat unavailable"** | Ensure the Node server is running on port **3001** and your `GEMINI_API_KEY` is valid. |
+| **News not loading** | Check your `VITE_NEWSAPI_KEY` or wait for the system to fallback to RSS feeds. |
+
+---
+
+##  Security
+- **No Secrets**: This repository uses `.gitignore` to ensure no active API keys or environment secrets are committed.
+- **Environment Management**: All sensitive keys are managed via local `.env` files.
+
+

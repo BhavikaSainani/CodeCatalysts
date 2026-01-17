@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/lib/AuthContext";
 
-import { Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info, Newspaper, MessageSquare } from "lucide-react";
+import { Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info, Newspaper, MessageSquare, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
@@ -19,6 +20,17 @@ const navLinks = [
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Failed to logout", error);
+    }
+  };
 
   return (
     <motion.nav
@@ -31,9 +43,14 @@ export const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-leaf flex items-center justify-center">
-              <Leaf className="w-6 h-6 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-leaf flex items-center justify-center overflow-hidden">
+              <img
+                src="/logo.jpg"
+                alt="InsightEdge Logo"
+                className="w-6 h-6 object-contain"
+              />
             </div>
+
             <span className="text-xl font-bold text-gradient-forest">InsightEdge</span>
           </Link>
 
@@ -56,11 +73,16 @@ export const Navigation = () => {
             })}
           </div>
 
-          {/* CTA Button */}
+          {/* CTA / Logout Button */}
           <div className="hidden md:block">
-            <Link to="/upload">
-              <Button className="btn-forest">Get Started</Button>
-            </Link>
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Log Out
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -106,9 +128,18 @@ export const Navigation = () => {
                   </Link>
                 );
               })}
-              <Link to="/upload" onClick={() => setIsOpen(false)}>
-                <Button className="btn-forest w-full mt-4">Get Started</Button>
-              </Link>
+
+              <Button
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                variant="destructive"
+                className="w-full mt-4 gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Log Out
+              </Button>
             </div>
           </motion.div>
         )}

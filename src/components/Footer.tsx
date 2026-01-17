@@ -58,7 +58,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/10 mt-8 pt-8 text-center text-sm text-primary-foreground/50">
-          <p>© 2024 InsightEdge. Built with 🌿 for smarter cities.</p>
+          <p>InsightEdge. Built with 🌿 for smarter cities.</p>
         </div>
       </div>
     </footer>

@@ -57,6 +57,75 @@ class CareerAdviceResponse(BaseModel):
     answer: str
     rag_used: bool = False
 
+# ============ Global Definitions ============
+
+ROLE_DEFINITIONS = {
+    "Urban Data Scientist": {
+        "requirements": ["python", "machine learning", "data science", "statistics", "data analysis", "pandas", "numpy"],
+        "description": "Apply data science and ML to solve urban challenges and improve city services",
+        "next_steps": ["Learn GIS & Spatial Analysis", "Study Urban Analytics", "Build city data projects"]
+    },
+    "GIS Analyst": {
+        "requirements": ["gis", "spatial analysis", "python", "arcgis", "qgis", "remote sensing", "cartography", "data visualization"],
+        "description": "Analyze spatial data to support urban planning and city operations",
+        "next_steps": ["Master ArcGIS/QGIS", "Learn Remote Sensing", "Study Urban Geography"]
+    },
+    "Smart City Analyst": {
+        "requirements": ["data analysis", "excel", "sql", "tableau", "power bi", "visualization", "data analytics", "python", "gis", "urban planning", "iot", "statistics", "public policy"],
+        "description": "Analyze city data to drive smarter urban planning and policy decisions",
+        "next_steps": ["Learn GIS Tools", "Study Urban Planning Basics", "Understand IoT & Sensors"]
+    },
+    "Transportation Systems Analyst": {
+        "requirements": ["transportation", "traffic", "mobility", "logistics", "simulation", "urban mobility", "traffic modeling", "python", "gis"],
+        "description": "Optimize transportation networks and urban mobility systems",
+        "next_steps": ["Learn Traffic Modeling", "Study Urban Mobility Analytics", "Master Simulation Tools"]
+    },
+    "IoT Engineer (Smart Cities)": {
+        "requirements": ["iot", "sensors", "embedded systems", "networking", "hardware", "mqtt", "cloud platforms", "data streaming", "python"],
+        "description": "Design and deploy IoT sensor networks for smart city infrastructure",
+        "next_steps": ["Learn MQTT & Data Streaming", "Study Cloud Platforms", "Build Smart Sensor Projects"]
+    },
+    "Smart Infrastructure Engineer": {
+        "requirements": ["engineering", "infrastructure", "systems", "electrical", "civil", "smart grid", "iot", "sensors", "networking", "cloud computing"],
+        "description": "Design and manage smart city infrastructure and connected systems",
+        "next_steps": ["Learn IoT & Sensors", "Study Smart Grid Technology", "Understand City Networks"]
+    },
+    "Sustainability Analyst": {
+        "requirements": ["sustainability", "environment", "climate", "carbon", "green", "renewable", "esg", "sustainability metrics", "data analysis"],
+        "description": "Measure and improve city sustainability and environmental impact",
+        "next_steps": ["Learn Sustainability Metrics", "Study Energy Optimization", "Understand Carbon Accounting"]
+    },
+    "Civic Tech Developer": {
+        "requirements": ["python", "javascript", "web", "api", "programming", "software", "react", "node.js", "api development", "open data", "civic engagement"],
+        "description": "Build applications that improve civic engagement and city services",
+        "next_steps": ["Work with Open Data APIs", "Learn Civic Design", "Build Community Tech Projects"]
+    },
+    "Urban AI Engineer": {
+        "requirements": ["machine learning", "deep learning", "ai", "tensorflow", "pytorch", "computer vision", "neural networks", "urban analytics", "python", "data engineering"],
+        "description": "Apply AI and computer vision to urban challenges like traffic and safety",
+        "next_steps": ["Study Computer Vision", "Learn Urban Analytics", "Build Smart City AI Models"]
+    },
+    "Energy Systems Engineer": {
+        "requirements": ["energy", "power", "electrical", "grid", "renewable", "smart grid", "energy optimization", "iot", "data analysis"],
+        "description": "Design and optimize smart grid and city energy systems",
+        "next_steps": ["Learn Smart Grid Tech", "Study Energy Optimization", "Understand Renewable Integration"]
+    }
+}
+
+def calculate_match_score(user_skills: set, required_skills: list) -> float:
+    """Standardized scoring algorithm for all features"""
+    if not required_skills:
+        return 0.0
+    
+    # Calculate raw overlap
+    matching = [s for s in required_skills if any(s.lower() in us.lower() for us in user_skills)]
+    raw_score = (len(matching) / len(required_skills)) * 100
+    
+    # Use the 'Partial Match Boost' formula: 30 + (raw * 0.7)
+    # This keeps scores in a professional range (e.g., 30% for 0 matches, 100% for all matches)
+    final_score = 30 + (raw_score * 0.7)
+    return round(final_score, 1)
+
 # ============ API Endpoints ============
 
 @app.get("/")
@@ -95,6 +164,12 @@ async def upload_resume(file: UploadFile = File(...)):
         
         # Parse resume
         parsed_data = parse_resume(raw_text)
+        
+        # Add metadata
+        if "metadata" not in parsed_data:
+            parsed_data["metadata"] = {}
+        parsed_data["metadata"]["source"] = "Resume PDF"
+        parsed_data["metadata"]["filename"] = file.filename
         
         # Analyze quality
         quality = analyze_resume_quality(parsed_data)
@@ -151,30 +226,20 @@ async def skills_gap_analysis(request: SkillsGapRequest):
     if not current_session["resume_data"]:
         raise HTTPException(status_code=400, detail="No resume uploaded. Please upload a resume first.")
     
-    target_role = request.target_role.lower()
+    target_role = request.target_role  # Original casing
     current_skills = set(skill.lower() for skill in current_session["resume_data"].get("skills", []))
+    target_role_key = next((k for k in ROLE_DEFINITIONS.keys() if k.lower() == target_role.lower()), None)
     
-    # Smart City Role skill requirements
-    role_skills = {
-        # Smart City Specific Roles
-        "smart city analyst": ["data analysis", "python", "gis", "urban planning", "iot", "data visualization", "statistics", "public policy"],
-        "urban data scientist": ["python", "machine learning", "gis", "spatial analysis", "statistics", "data visualization", "urban analytics", "sql"],
-        "urban planner (tech-enabled)": ["urban planning", "gis", "data analysis", "public policy", "sustainability", "transportation planning", "community engagement"],
-        "smart infrastructure engineer": ["iot", "sensors", "networking", "cloud computing", "data engineering", "embedded systems", "smart grid"],
-        "gis analyst": ["gis", "spatial analysis", "python", "arcgis", "qgis", "remote sensing", "cartography", "data visualization"],
-        "transportation systems analyst": ["traffic modeling", "urban mobility", "data analysis", "gis", "transportation planning", "simulation", "python"],
-        "sustainability analyst": ["sustainability metrics", "environmental science", "data analysis", "carbon footprint", "energy optimization", "reporting"],
-        "energy systems engineer": ["smart grid", "energy optimization", "renewable energy", "power systems", "iot", "data analysis", "electrical engineering"],
-        "iot engineer (smart cities)": ["iot", "sensors", "embedded systems", "networking", "cloud platforms", "data streaming", "python", "mqtt"],
-        "civic tech developer": ["python", "javascript", "api development", "open data", "civic engagement", "web development", "data visualization"],
-        "urban ai engineer": ["machine learning", "deep learning", "python", "computer vision", "urban analytics", "tensorflow", "data engineering"],
-        
-        # Fallback general roles
-        "data scientist": ["python", "sql", "machine learning", "statistics", "data visualization"],
-        "software engineer": ["programming", "data structures", "algorithms", "system design", "git"],
-    }
-    
-    required_skills = role_skills.get(target_role, ["data analysis", "python", "communication", "problem solving", "gis"])
+    if not target_role_key:
+        # Fallback requirements if role is unknown
+        required_skills = ["data analysis", "python", "communication", "problem solving", "gis"]
+        description = "General Smart City Role"
+        next_steps = ["Learn Python", "Explore GIS"]
+    else:
+        role_def = ROLE_DEFINITIONS[target_role_key]
+        required_skills = role_def["requirements"]
+        description = role_def["description"]
+        next_steps = role_def["next_steps"]
     
     # Find matching and missing skills
     matching_skills = []
@@ -186,8 +251,8 @@ async def skills_gap_analysis(request: SkillsGapRequest):
         else:
             missing_skills.append(skill)
     
-    # Calculate match percentage
-    match_percentage = (len(matching_skills) / len(required_skills)) * 100 if required_skills else 0
+    # Calculate match percentage using the SHARED formula
+    match_percentage = calculate_match_score(current_skills, required_skills)
     
     # Generate recommendations
     recommendations = []
@@ -195,14 +260,14 @@ async def skills_gap_analysis(request: SkillsGapRequest):
         recommendations.append(get_skill_recommendation(skill))
     
     return {
-        "target_role": request.target_role,
+        "target_role": target_role_key or target_role,
         "current_skills": list(current_session["resume_data"].get("skills", [])),
         "required_skills": required_skills,
         "matching_skills": matching_skills,
         "missing_skills": missing_skills,
-        "match_percentage": round(match_percentage, 1),
+        "match_percentage": match_percentage,
         "recommendations": recommendations,
-        "readiness": "High" if match_percentage >= 70 else "Medium" if match_percentage >= 40 else "Low"
+        "readiness": "High" if match_percentage >= 75 else "Medium" if match_percentage >= 50 else "Low"
     }
 
 
@@ -260,99 +325,27 @@ async def get_career_paths():
         raise HTTPException(status_code=400, detail="No resume uploaded. Please upload a resume first.")
     
     user_skills = set(skill.lower() for skill in current_session["resume_data"].get("skills", []))
-    
-    # Define required skills for each role to calculate deterministic match
-    role_requirements = {
-        "Urban Data Scientist": ["python", "machine learning", "data science", "statistics", "data analysis", "pandas", "numpy"],
-        "GIS Analyst": ["gis", "mapping", "spatial", "arcgis", "qgis", "geography", "remote sensing"],
-        "Smart City Analyst": ["data analysis", "excel", "sql", "tableau", "power bi", "visualization", "data analytics"],
-        "Transportation Systems Analyst": ["transportation", "traffic", "mobility", "logistics", "simulation", "urban mobility"],
-        "IoT Engineer (Smart Cities)": ["iot", "embedded", "sensors", "arduino", "raspberry", "networking", "hardware", "mqtt"],
-        "Smart Infrastructure Engineer": ["engineering", "infrastructure", "systems", "electrical", "civil", "smart grid"],
-        "Sustainability Analyst": ["sustainability", "environment", "climate", "carbon", "green", "renewable", "esg"],
-        "Civic Tech Developer": ["python", "javascript", "web", "api", "programming", "software", "react", "node.js"],
-        "Urban AI Engineer": ["machine learning", "deep learning", "ai", "tensorflow", "pytorch", "computer vision", "neural networks"],
-        "Energy Systems Engineer": ["energy", "power", "electrical", "grid", "renewable", "smart grid"]
-    }
-
-    role_data = {
-        "Urban Data Scientist": {
-            "description": "Apply data science and ML to solve urban challenges and improve city services",
-            "next_steps": ["Learn GIS & Spatial Analysis", "Study Urban Analytics", "Build city data projects"]
-        },
-        "GIS Analyst": {
-            "description": "Analyze spatial data to support urban planning and city operations",
-            "next_steps": ["Master ArcGIS/QGIS", "Learn Remote Sensing", "Study Urban Geography"]
-        },
-        "Smart City Analyst": {
-            "description": "Analyze city data to drive smarter urban planning and policy decisions",
-            "next_steps": ["Learn GIS Tools", "Study Urban Planning Basics", "Understand IoT & Sensors"]
-        },
-        "Transportation Systems Analyst": {
-            "description": "Optimize transportation networks and urban mobility systems",
-            "next_steps": ["Learn Traffic Modeling", "Study Urban Mobility Analytics", "Master Simulation Tools"]
-        },
-        "IoT Engineer (Smart Cities)": {
-            "description": "Design and deploy IoT sensor networks for smart city infrastructure",
-            "next_steps": ["Learn MQTT & Data Streaming", "Study Cloud Platforms", "Build Smart Sensor Projects"]
-        },
-        "Smart Infrastructure Engineer": {
-            "description": "Design and manage smart city infrastructure and connected systems",
-            "next_steps": ["Learn IoT & Sensors", "Study Smart Grid Technology", "Understand City Networks"]
-        },
-        "Sustainability Analyst": {
-            "description": "Measure and improve city sustainability and environmental impact",
-            "next_steps": ["Learn Sustainability Metrics", "Study Energy Optimization", "Understand Carbon Accounting"]
-        },
-        "Civic Tech Developer": {
-            "description": "Build applications that improve civic engagement and city services",
-            "next_steps": ["Work with Open Data APIs", "Learn Civic Design", "Build Community Tech Projects"]
-        },
-        "Urban AI Engineer": {
-            "description": "Apply AI and computer vision to urban challenges like traffic and safety",
-            "next_steps": ["Study Computer Vision", "Learn Urban Analytics", "Build Smart City AI Models"]
-        },
-        "Energy Systems Engineer": {
-            "description": "Design and optimize smart grid and city energy systems",
-            "next_steps": ["Learn Smart Grid Tech", "Study Energy Optimization", "Understand Renewable Integration"]
-        }
-    }
-
     career_paths = []
     
-    for title, requirements in role_requirements.items():
-        matching = [s for s in requirements if s in user_skills]
-        if matching:
-            # Calculate match percentage
-            score = (len(matching) / len(requirements)) * 100
-            
-            # Add some base score to avoid very low numbers for partial matches
-            # but keep it deterministic
-            score = 30 + (score * 0.7) 
-            
-            # Map score to label
-            match_label = "High" if score >= 75 else "Medium" if score >= 50 else "Low"
-            
-            career_paths.append({
-                "title": title,
-                "match": match_label,
-                "match_score": round(score, 1),
-                "description": role_data[title]["description"],
-                "next_steps": role_data[title]["next_steps"]
-            })
+    for title, role_def in ROLE_DEFINITIONS.items():
+        requirements = role_def["requirements"]
+        
+        # Use SHARED scoring function
+        score = calculate_match_score(user_skills, requirements)
+        
+        # Map score to label (consistent with Readiness)
+        match_label = "High" if score >= 75 else "Medium" if score >= 50 else "Low"
+        
+        career_paths.append({
+            "title": title,
+            "match": match_label,
+            "match_score": score,
+            "description": role_def["description"],
+            "next_steps": role_def["next_steps"]
+        })
 
     # Sort by match score
     career_paths.sort(key=lambda x: x["match_score"], reverse=True)
-
-    # Default Smart City entry path if nothing matches
-    if not career_paths:
-        career_paths.append({
-            "title": "Smart City Analyst",
-            "match": "Medium",
-            "match_score": 45.0,
-            "description": "Entry point for Smart City careers - analyze urban data for better cities",
-            "next_steps": ["Learn Python for Data Analysis", "Study GIS Basics", "Understand Urban Planning"]
-        })
     
     return {
         "skills_detected": list(current_session["resume_data"].get("skills", [])),
