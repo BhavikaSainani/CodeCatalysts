@@ -340,8 +340,10 @@ async def career_chat(request: ChatRequest):
 # ============ Helper Functions ============
 
 def get_skill_recommendation(skill: str) -> Dict:
-    """Get learning recommendation for a skill - focused on Smart City skills with Udemy links"""
-    recommendations = {
+    """Get learning recommendation for a skill - Udemy + SWAYAM (India) links"""
+    
+    # Udemy recommendations
+    udemy_recs = {
         # Core Programming
         "python": {"resource": "Python for Data Science - Udemy", "url": "https://www.udemy.com/topic/python/", "duration": "4-6 weeks"},
         "sql": {"resource": "SQL Bootcamp - Udemy", "url": "https://www.udemy.com/topic/sql/", "duration": "2-3 weeks"},
@@ -380,15 +382,53 @@ def get_skill_recommendation(skill: str) -> Dict:
         "networking": {"resource": "Networking Fundamentals - Udemy", "url": "https://www.udemy.com/topic/networking/", "duration": "4-6 weeks"},
     }
     
-    rec = recommendations.get(skill.lower(), {
+    # SWAYAM (Indian Govt) recommendations - FREE courses
+    swayam_recs = {
+        "python": {"resource": "Python for Data Science - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=python", "duration": "12 weeks"},
+        "machine learning": {"resource": "Machine Learning - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=machine+learning", "duration": "12 weeks"},
+        "data analysis": {"resource": "Data Analytics - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=data+analytics", "duration": "8 weeks"},
+        "statistics": {"resource": "Statistics for Engineers - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=statistics", "duration": "12 weeks"},
+        "iot": {"resource": "Introduction to IoT - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=iot", "duration": "8 weeks"},
+        "gis": {"resource": "GIS Fundamentals - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=gis", "duration": "12 weeks"},
+        "urban planning": {"resource": "Urban Planning & Design - SWAYAM", "url": "https://swayam.gov.in/explorer?searchText=urban+planning", "duration": "12 weeks"},
+        "sustainability": {"resource": "Sustainable Development - SWAYAM", "url": "https://swayam.gov.in/explorer?searchText=sustainable+development", "duration": "8 weeks"},
+        "deep learning": {"resource": "Deep Learning - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=deep+learning", "duration": "12 weeks"},
+        "cloud platforms": {"resource": "Cloud Computing - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=cloud+computing", "duration": "8 weeks"},
+        "networking": {"resource": "Computer Networks - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=computer+networks", "duration": "12 weeks"},
+        "sql": {"resource": "Database Management - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=database", "duration": "8 weeks"},
+        "data visualization": {"resource": "Data Science & Visualization - SWAYAM", "url": "https://swayam.gov.in/explorer?searchText=data+visualization", "duration": "8 weeks"},
+        "public policy": {"resource": "Public Policy & Governance - SWAYAM", "url": "https://swayam.gov.in/explorer?searchText=public+policy", "duration": "12 weeks"},
+        "transportation planning": {"resource": "Transportation Engineering - SWAYAM", "url": "https://swayam.gov.in/explorer?searchText=transportation", "duration": "12 weeks"},
+        "remote sensing": {"resource": "Remote Sensing - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=remote+sensing", "duration": "8 weeks"},
+        "smart grid": {"resource": "Smart Grid - SWAYAM (NPTEL)", "url": "https://swayam.gov.in/explorer?searchText=smart+grid", "duration": "8 weeks"},
+    }
+    
+    skill_lower = skill.lower()
+    
+    # Get Udemy recommendation
+    udemy_rec = udemy_recs.get(skill_lower, {
         "resource": f"Learn {skill} on Udemy",
         "url": f"https://www.udemy.com/courses/search/?q={skill.replace(' ', '+')}",
         "duration": "Varies"
     })
     
+    # Get SWAYAM recommendation if available
+    swayam_rec = swayam_recs.get(skill_lower)
+    
+    # Return combined info - prefer SWAYAM for Indian govt free course
+    if swayam_rec:
+        return {
+            "skill": skill,
+            "resource": f"{udemy_rec['resource']} | {swayam_rec['resource']}",
+            "url": swayam_rec["url"],  # Link to free SWAYAM course
+            "duration": swayam_rec["duration"],
+            "udemy_url": udemy_rec["url"],
+            "swayam_url": swayam_rec["url"]
+        }
+    
     return {
         "skill": skill,
-        **rec
+        **udemy_rec
     }
 
 

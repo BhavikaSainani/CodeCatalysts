@@ -14,7 +14,7 @@ import Impact from "./pages/Impact";
 import News from "./pages/News";
 import Article from "./pages/Article";
 import About from "./pages/About";
-import SentimentAnalysis from "./pages/SentimentAnalysis";
+import LinkedIn from "./pages/LinkedIn";
 import ChatBot from "./pages/ChatBot";
 import NotFound from "./pages/NotFound";
 
@@ -39,7 +39,7 @@ const App = () => (
               <Route path="/news" element={<News />} />
               <Route path="/news/:id" element={<Article />} />
               <Route path="/about" element={<About />} />
-              <Route path="/sentiment" element={<SentimentAnalysis />} />
+              <Route path="/linkedin" element={<LinkedIn />} />
               <Route path="/chatbot" element={<ChatBot />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
