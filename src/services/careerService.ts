@@ -242,6 +242,8 @@ export async function sendChatMessage(question: string): Promise<ChatResponse> {
     return await response.json();
 }
 
+// ============ Peer Learning Network ============
+
 export interface PeerMatch {
     peer_id: string;
     pseudonym: string;

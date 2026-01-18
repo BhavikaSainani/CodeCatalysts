@@ -49,8 +49,8 @@ const App = () => (
                 <Route path="/chatbot" element={<ChatBot />} />
                 <Route path="/peer-network" element={<PeerNetwork />} />
                 <Route path="/global-opportunities" element={<GlobalOpportunities />} />
-              </Route >
-            </Route >
+              </Route>
+            </Route>
 
 
             {/* Unknown Routes */}

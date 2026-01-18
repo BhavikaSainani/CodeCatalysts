@@ -2,35 +2,29 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/AuthContext";
-
-import { Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info, Newspaper, MessageSquare, LogOut, Users, Globe, ChevronDown } from "lucide-react";
+import {
+  Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info,
+  Newspaper, MessageSquare, LogOut, Users, Globe, ChevronDown
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navGroups = [
   {
-    name: "Analyze",
-    icon: Target,
+    name: "Career Tools",
     items: [
-      { name: "Upload Resume", path: "/upload", icon: FileText, desc: "Identify your core skills" },
-      { name: "Career Match", path: "/career-match", icon: Target, desc: "Find roles for you" },
-      { name: "Skill Gap", path: "/skill-gap", icon: TrendingUp, desc: "Bridge your expertise" },
-      { name: "Roadmap", path: "/roadmap", icon: Map, desc: "Step-by-step career path" },
+      { name: "Upload Resume", path: "/upload", icon: FileText, description: "Get started with your profile" },
+      { name: "Career Match", path: "/career-match", icon: Target, description: "Find roles that fit you" },
+      { name: "Skill Gap", path: "/skill-gap", icon: TrendingUp, description: "Bridge your knowledge gaps" },
+      { name: "Roadmap", path: "/roadmap", icon: Map, description: "Your path to success" },
     ]
   },
   {
-    name: "Network",
-    icon: Users,
+    name: "Community & Growth",
     items: [
-      { name: "Peer Network", path: "/peer-network", icon: Users, desc: "Connect with learners" },
-      { name: "Global Marketplace", path: "/global-opportunities", icon: Globe, desc: "Arbitrage opportunities" },
-    ]
-  },
-  {
-    name: "Insights",
-    icon: Newspaper,
-    items: [
-      { name: "News & Trends", path: "/news", icon: Newspaper, desc: "Smart city evolution" },
-      { name: "AI ChatBot", path: "/chatbot", icon: MessageSquare, desc: "Career guidance" },
+      { name: "Peer Network", path: "/peer-network", icon: Users, description: "Connect with others" },
+      { name: "Global Marketplace", path: "/global-opportunities", icon: Globe, description: "Explore the world" },
+      { name: "News & Insights", path: "/news", icon: Newspaper, description: "Stay informed" },
+      { name: "ChatBot", path: "/chatbot", icon: MessageSquare, description: "Instant assistance" },
     ]
   }
 ];
@@ -45,9 +39,7 @@ const NavDropdown = ({ group, isActive }: { group: any, isActive: boolean }) => 
   };
 
   const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setIsOpen(false);
-    }, 150);
+    timeoutRef.current = setTimeout(() => setIsOpen(false), 100);
   };
 
   return (
@@ -57,11 +49,16 @@ const NavDropdown = ({ group, isActive }: { group: any, isActive: boolean }) => 
       onMouseLeave={handleMouseLeave}
     >
       <button
-        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${isActive || isOpen ? "bg-secondary text-primary" : "text-muted-foreground hover:text-primary hover:bg-secondary/40"
+        className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-1 ${isActive ? "bg-secondary text-primary" : "text-muted-foreground hover:text-primary hover:bg-secondary/40"
           }`}
       >
         {group.name}
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="w-4 h-4" />
+        </motion.div>
       </button>
 
       <AnimatePresence>
@@ -70,22 +67,22 @@ const NavDropdown = ({ group, isActive }: { group: any, isActive: boolean }) => 
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute top-full left-0 mt-1 w-64 p-3 rounded-2xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-2xl z-50 overflow-hidden"
+            transition={{ duration: 0.2 }}
+            className="absolute top-full left-0 mt-2 w-64 bg-background border border-border rounded-2xl shadow-2xl p-2 z-50 backdrop-blur-xl"
           >
-            <div className="space-y-1">
+            <div className="grid gap-1">
               {group.items.map((item: any) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary transition-colors group"
+                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors group"
                 >
-                  <div className="mt-0.5 p-1.5 rounded-lg bg-primary/5 group-hover:bg-primary/10 transition-colors">
-                    <item.icon className="w-4 h-4 text-primary" />
+                  <div className="p-2 rounded-lg bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                    <item.icon className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="text-sm font-bold text-foreground">{item.name}</div>
-                    <div className="text-[10px] text-muted-foreground leading-tight">{item.desc}</div>
+                    <div className="text-xs text-muted-foreground line-clamp-1">{item.description}</div>
                   </div>
                 </Link>
               ))}
