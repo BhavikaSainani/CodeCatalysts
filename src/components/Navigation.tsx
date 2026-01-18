@@ -3,11 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/AuthContext";
 
-<<<<<<< HEAD
-import { Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info, Newspaper, MessageSquare, LogOut, Users } from "lucide-react";
-=======
-import { Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info, Newspaper, MessageSquare, LogOut, Globe } from "lucide-react";
->>>>>>> 69abee37189299733e5d4556b21d87728e59b199
+import { Menu, X, Leaf, FileText, Target, TrendingUp, Map, Info, Newspaper, MessageSquare, LogOut, Globe, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
@@ -16,11 +12,8 @@ const navLinks = [
   { name: "Career Match", path: "/career-match", icon: Target },
   { name: "Skill Gap", path: "/skill-gap", icon: TrendingUp },
   { name: "Roadmap", path: "/roadmap", icon: Map },
-<<<<<<< HEAD
   { name: "Peer Network", path: "/peer-network", icon: Users },
-=======
   { name: "Global Marketplace", path: "/global-opportunities", icon: Globe },
->>>>>>> 69abee37189299733e5d4556b21d87728e59b199
   { name: "News & Insights", path: "/news", icon: Newspaper },
   { name: "ChatBot", path: "/chatbot", icon: MessageSquare },
   { name: "About", path: "/about", icon: Info },

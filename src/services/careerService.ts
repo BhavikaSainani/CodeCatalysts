@@ -224,7 +224,6 @@ export async function sendChatMessage(question: string): Promise<ChatResponse> {
     return await response.json();
 }
 
-<<<<<<< HEAD
 // ============ Peer Learning Network ============
 
 export interface PeerMatch {
@@ -279,7 +278,11 @@ export async function connectWithPeer(peerId: string): Promise<PeerConnectionRes
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.detail || 'Failed to connect with peer');
-=======
+    }
+
+    return await response.json();
+}
+
 // Get global skill arbitrage opportunities
 export async function getSkillArbitrage(): Promise<SkillArbitrageResponse> {
     const response = await fetch(`${CAREER_API_URL}/skill-arbitrage`);
@@ -287,7 +290,6 @@ export async function getSkillArbitrage(): Promise<SkillArbitrageResponse> {
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.detail || 'Failed to get skill arbitrage data');
->>>>>>> 69abee37189299733e5d4556b21d87728e59b199
     }
 
     return await response.json();

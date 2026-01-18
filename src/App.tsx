@@ -17,12 +17,9 @@ import News from "./pages/News";
 import Article from "./pages/Article";
 import About from "./pages/About";
 import ChatBot from "./pages/ChatBot";
-<<<<<<< HEAD
-import PeerNetwork from "./pages/PeerNetwork";
-=======
 import GlobalOpportunities from "./pages/GlobalOpportunities";
->>>>>>> 69abee37189299733e5d4556b21d87728e59b199
 import NotFound from "./pages/NotFound";
+import PeerNetwork from "./pages/PeerNetwork";
 
 const queryClient = new QueryClient();
 
@@ -50,11 +47,10 @@ const App = () => (
                 <Route path="/news/:id" element={<Article />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/chatbot" element={<ChatBot />} />
-<<<<<<< HEAD
+
                 <Route path="/peer-network" element={<PeerNetwork />} />
-=======
+
                 <Route path="/global-opportunities" element={<GlobalOpportunities />} />
->>>>>>> 69abee37189299733e5d4556b21d87728e59b199
               </Route>
             </Route>
 
