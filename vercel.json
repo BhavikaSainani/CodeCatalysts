@@ -16,8 +16,7 @@
     ],
     "rewrites": [
         {
-            "source": "/api/:path*",
-            "destination": "http://0.0.0.0:8001/:path*"
+            "destination": "https://insight-edge-h7yr.onrender.com/:path*"
         },
         {
             "source": "/(.*)",

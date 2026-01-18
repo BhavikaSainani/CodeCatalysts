@@ -17,15 +17,15 @@ export async function getNewsWithFallback(
 ): Promise<NewsArticle[]> {
   try {
     // Try to fetch real news
-    const realNews = dateFilter === 'latest' 
+    const realNews = dateFilter === 'latest'
       ? await getLatestNews()
       : await getPast30DaysNews();
-    
+
     // If we got real news, return it
     if (realNews && realNews.length > 0) {
       return realNews;
     }
-    
+
     // Fallback to mock data
     console.warn('No real news available, using mock data');
     return mockNewsArticles;

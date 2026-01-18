@@ -63,62 +63,52 @@ ROLE_DEFINITIONS = {
     "Urban Data Scientist": {
         "requirements": ["python", "machine learning", "data science", "statistics", "data analysis", "pandas", "numpy"],
         "description": "Apply data science and ML to solve urban challenges and improve city services",
-        "next_steps": ["Learn GIS & Spatial Analysis", "Study Urban Analytics", "Build city data projects"],
-        "salary_range": "$90,000 - $140,000"
+        "next_steps": ["Learn GIS & Spatial Analysis", "Study Urban Analytics", "Build city data projects"]
     },
     "GIS Analyst": {
         "requirements": ["gis", "spatial analysis", "python", "arcgis", "qgis", "remote sensing", "cartography", "data visualization"],
         "description": "Analyze spatial data to support urban planning and city operations",
-        "next_steps": ["Master ArcGIS/QGIS", "Learn Remote Sensing", "Study Urban Geography"],
-        "salary_range": "$55,000 - $85,000"
+        "next_steps": ["Master ArcGIS/QGIS", "Learn Remote Sensing", "Study Urban Geography"]
     },
     "Smart City Analyst": {
         "requirements": ["data analysis", "excel", "sql", "tableau", "power bi", "visualization", "data analytics", "python", "gis", "urban planning", "iot", "statistics", "public policy"],
         "description": "Analyze city data to drive smarter urban planning and policy decisions",
-        "next_steps": ["Learn GIS Tools", "Study Urban Planning Basics", "Understand IoT & Sensors"],
-        "salary_range": "$65,000 - $95,000"
+        "next_steps": ["Learn GIS Tools", "Study Urban Planning Basics", "Understand IoT & Sensors"]
     },
     "Transportation Systems Analyst": {
         "requirements": ["transportation", "traffic", "mobility", "logistics", "simulation", "urban mobility", "traffic modeling", "python", "gis"],
         "description": "Optimize transportation networks and urban mobility systems",
-        "next_steps": ["Learn Traffic Modeling", "Study Urban Mobility Analytics", "Master Simulation Tools"],
-        "salary_range": "$70,000 - $100,000"
+        "next_steps": ["Learn Traffic Modeling", "Study Urban Mobility Analytics", "Master Simulation Tools"]
     },
     "IoT Engineer (Smart Cities)": {
         "requirements": ["iot", "sensors", "embedded systems", "networking", "hardware", "mqtt", "cloud platforms", "data streaming", "python"],
         "description": "Design and deploy IoT sensor networks for smart city infrastructure",
-        "next_steps": ["Learn MQTT & Data Streaming", "Study Cloud Platforms", "Build Smart Sensor Projects"],
-        "salary_range": "$85,000 - $130,000"
+        "next_steps": ["Learn MQTT & Data Streaming", "Study Cloud Platforms", "Build Smart Sensor Projects"]
     },
     "Smart Infrastructure Engineer": {
         "requirements": ["engineering", "infrastructure", "systems", "electrical", "civil", "smart grid", "iot", "sensors", "networking", "cloud computing"],
         "description": "Design and manage smart city infrastructure and connected systems",
-        "next_steps": ["Learn IoT & Sensors", "Study Smart Grid Technology", "Understand City Networks"],
-        "salary_range": "$80,000 - $120,000"
+        "next_steps": ["Learn IoT & Sensors", "Study Smart Grid Technology", "Understand City Networks"]
     },
     "Sustainability Analyst": {
         "requirements": ["sustainability", "environment", "climate", "carbon", "green", "renewable", "esg", "sustainability metrics", "data analysis"],
         "description": "Measure and improve city sustainability and environmental impact",
-        "next_steps": ["Learn Sustainability Metrics", "Study Energy Optimization", "Understand Carbon Accounting"],
-        "salary_range": "$60,000 - $90,000"
+        "next_steps": ["Learn Sustainability Metrics", "Study Energy Optimization", "Understand Carbon Accounting"]
     },
     "Civic Tech Developer": {
         "requirements": ["python", "javascript", "web", "api", "programming", "software", "react", "node.js", "api development", "open data", "civic engagement"],
         "description": "Build applications that improve civic engagement and city services",
-        "next_steps": ["Work with Open Data APIs", "Learn Civic Design", "Build Community Tech Projects"],
-        "salary_range": "$75,000 - $115,000"
+        "next_steps": ["Work with Open Data APIs", "Learn Civic Design", "Build Community Tech Projects"]
     },
     "Urban AI Engineer": {
         "requirements": ["machine learning", "deep learning", "ai", "tensorflow", "pytorch", "computer vision", "neural networks", "urban analytics", "python", "data engineering"],
         "description": "Apply AI and computer vision to urban challenges like traffic and safety",
-        "next_steps": ["Study Computer Vision", "Learn Urban Analytics", "Build Smart City AI Models"],
-        "salary_range": "$100,000 - $160,000"
+        "next_steps": ["Study Computer Vision", "Learn Urban Analytics", "Build Smart City AI Models"]
     },
     "Energy Systems Engineer": {
         "requirements": ["energy", "power", "electrical", "grid", "renewable", "smart grid", "energy optimization", "iot", "data analysis"],
         "description": "Design and optimize smart grid and city energy systems",
-        "next_steps": ["Learn Smart Grid Tech", "Study Energy Optimization", "Understand Renewable Integration"],
-        "salary_range": "$80,000 - $125,000"
+        "next_steps": ["Learn Smart Grid Tech", "Study Energy Optimization", "Understand Renewable Integration"]
     }
 }
 
@@ -982,16 +972,9 @@ def generate_career_advice(question: str, resume_data: Dict) -> str:
     # 3. Generate Combined Response
     response_parts = []
     
-    # Salary Keywords
-    salary_keywords = ["salary", "earn", "pay", "compensation", "income", "package"]
-    is_salary_query = any(kw in question for kw in salary_keywords)
-
     # Add Role Info
     if role_entry:
         role_name, role_info = role_entry
-        if is_salary_query:
-            response_parts.append(f"For a {role_name}, the typical salary range is {role_info.get('salary_range', 'variable')} (highly dependent on location and experience).")
-        
         response_parts.append(f"Pursuing a career as a {role_name} is an excellent path! {role_info.get('description', '')}. You'll need to master skills like {', '.join(role_info['requirements'][:4])}.")
 
     # Add Location Info

@@ -35,7 +35,7 @@ export async function getLatestNews(
 ): Promise<NewsArticle[]> {
   const now = Date.now();
   const cacheExpired = now - newsCache.lastFetch.latest > CACHE_DURATION;
-  
+
   if (forceRefresh || cacheExpired || newsCache.latest.length === 0) {
     try {
       const news = await fetchAllNews('latest');
@@ -48,7 +48,7 @@ export async function getLatestNews(
       return newsCache.latest;
     }
   }
-  
+
   return newsCache.latest;
 }
 
@@ -60,7 +60,7 @@ export async function getPast30DaysNews(
 ): Promise<NewsArticle[]> {
   const now = Date.now();
   const cacheExpired = now - newsCache.lastFetch.past30days > CACHE_DURATION;
-  
+
   if (forceRefresh || cacheExpired || newsCache.past30days.length === 0) {
     try {
       const news = await fetchAllNews('past30days');
@@ -73,7 +73,7 @@ export async function getPast30DaysNews(
       return newsCache.past30days;
     }
   }
-  
+
   return newsCache.past30days;
 }
 
@@ -102,10 +102,10 @@ export async function getNewsByCategory(
 export async function getFeaturedArticle(
   dateFilter: 'latest' | 'past30days' = 'latest'
 ): Promise<NewsArticle | null> {
-  const news = dateFilter === 'latest' 
+  const news = dateFilter === 'latest'
     ? await getLatestNews()
     : await getPast30DaysNews();
-  
+
   return news.length > 0 ? news[0] : null;
 }
 
