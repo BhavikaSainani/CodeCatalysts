@@ -1,4 +1,4 @@
-export type NewsCategory = 
+export type NewsCategory =
   | 'Smart Cities'
   | 'Urban Mobility'
   | 'Infrastructure'
@@ -6,7 +6,7 @@ export type NewsCategory =
   | 'Governance & Policy'
   | 'Technology in Cities';
 
-export type SmartCityRole = 
+export type SmartCityRole =
   | 'Urban Data Analyst'
   | 'Smart Mobility Analyst'
   | 'City Operations Analyst';
@@ -215,7 +215,7 @@ export const getTrendingTopics = (): NewsCategory[] => {
     category,
     count: mockNewsArticles.filter(a => a.category === category).length,
   }));
-  
+
   return categoryCounts
     .sort((a, b) => b.count - a.count)
     .slice(0, 4)

@@ -1,5 +1,5 @@
-import { 
-  NewsArticle, 
+import {
+  NewsArticle,
   NewsCategory,
   getFeaturedArticle,
   getArticlesByCategory,
@@ -40,24 +40,24 @@ export const fetchNews = async (
   try {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     let articles = getArticlesByCategory(params.category || 'All');
-    
+
     // Sort by latest (most recent first)
     if (params.sortBy === 'latest' || !params.sortBy) {
-      articles = articles.sort((a, b) => 
+      articles = articles.sort((a, b) =>
         new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime()
       );
     }
-    
+
     // Apply pagination
     const offset = params.offset || 0;
     const limit = params.limit;
-    
+
     if (limit) {
       articles = articles.slice(offset, offset + limit);
     }
-    
+
     return {
       data: articles,
       success: true,
@@ -80,9 +80,9 @@ export const fetchArticle = async (
   try {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     const article = getArticleById(id);
-    
+
     if (!article) {
       return {
         data: null,
@@ -90,7 +90,7 @@ export const fetchArticle = async (
         message: 'Article not found',
       };
     }
-    
+
     return {
       data: article,
       success: true,
@@ -111,9 +111,9 @@ export const fetchFeaturedArticle = async (): Promise<NewsApiResponse<NewsArticl
   try {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     const article = getFeaturedArticle();
-    
+
     return {
       data: article,
       success: true,
@@ -134,9 +134,9 @@ export const fetchTrendingTopics = async (): Promise<NewsApiResponse<NewsCategor
   try {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     const topics = getTrendingTopics();
-    
+
     return {
       data: topics,
       success: true,
@@ -161,9 +161,9 @@ export const searchNews = async (
   try {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     let articles = getArticlesByCategory(params.category || 'All');
-    
+
     // Simple search in title and summary
     const searchLower = query.toLowerCase();
     articles = articles.filter(
@@ -172,7 +172,7 @@ export const searchNews = async (
         article.summary.toLowerCase().includes(searchLower) ||
         article.content.toLowerCase().includes(searchLower)
     );
-    
+
     // Sort by relevance (simple: title matches first)
     articles = articles.sort((a, b) => {
       const aTitleMatch = a.title.toLowerCase().includes(searchLower);
@@ -181,7 +181,7 @@ export const searchNews = async (
       if (!aTitleMatch && bTitleMatch) return 1;
       return 0;
     });
-    
+
     return {
       data: articles,
       success: true,

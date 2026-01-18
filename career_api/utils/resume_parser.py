@@ -1,7 +1,7 @@
 """
 Resume Parser - Extract structured data from resume text
 """
-
+const API_URL = import.meta.env.VITE_API_URL;
 import re
 from typing import List, Dict
 import logging

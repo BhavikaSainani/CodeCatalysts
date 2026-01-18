@@ -641,7 +641,7 @@ async def career_chat(request: ChatRequest):
     """AI-powered career advice chat"""
     
     question = request.question.lower()
-    resume_data = current_session.get("resume_data", {})
+    resume_data = current_session.get("resume_data") or {}
     
     # Generate contextual response based on question and resume
     response = generate_career_advice(question, resume_data)
@@ -951,40 +951,63 @@ def generate_career_advice(question: str, resume_data: Dict) -> str:
     skills = resume_data.get("skills", [])
     projects = resume_data.get("projects", [])
     
-    # Pattern-based responses (fallback when RAG not available)
+    # 1. Scope Filtering
+    allowed_topics = ["insightedge", "website", "platform", "app", "resume", "career", "skill", "job", "learn", "match", "network", "peer", "roadmap", "iot", "engineer", "data scientist", "analyst", "planning", "mobility", "infrastructure", "sustainability", "developer", "ai", "city", "location", "place", "india", "gujarat", "ahmedabad", "gandhinagar"]
+    
+    is_allowed = any(topic in question for topic in allowed_topics) or \
+                 any(role.lower() in question for role in ROLE_DEFINITIONS.keys())
+    
+    if not is_allowed:
+        return "I'm an InsightEdge ChatBot, I can't answer this. I can only help you with questions related to the InsightEdge platform, website development concepts, career advice, or job roles and locations in our system."
+
+    # 2. Extract Data
+    role_entry = next(((k, v) for k, v in ROLE_DEFINITIONS.items() if k.lower() in question), None)
+    
+    # Location Matching
+    indian_cities = [r for r in REGIONAL_DEMAND_DATA if r.get("is_local")]
+    location_keywords = ["city", "place", "location", "where", "gujarat", "india"]
+    is_location_query = any(kw in question for kw in location_keywords)
+    matched_region = next((r for r in REGIONAL_DEMAND_DATA if r["city"].lower() in question or r["country"].lower() in question), None)
+    
+    # 3. Generate Combined Response
+    response_parts = []
+    
+    # Add Role Info
+    if role_entry:
+        role_name, role_info = role_entry
+        response_parts.append(f"Pursuing a career as a {role_name} is an excellent path! {role_info.get('description', '')}. You'll need to master skills like {', '.join(role_info['requirements'][:4])}.")
+
+    # Add Location Info
+    if matched_region:
+        response_parts.append(f"Regarding your query about {matched_region['city']}, there is currently a {matched_region['demand']} demand for such talent. {matched_region['description']} Salaries in this region average around ${matched_region['avg_salary_usd']}.")
+    elif "gujarat" in question or "ahmedabad" in question or "gandhinagar" in question:
+        response_parts.append("For Gujarat (especially Ahmedabad/Gandhinagar), we're seeing massive growth in tech hubs like GIFT City. While I don't have the exact salary metrics yet, it's becoming a major center for IT and infrastructure.")
+    elif "india" in question:
+        cities_str = ", ".join([c['city'] for c in indian_cities])
+        response_parts.append(f"Across India, key hubs for these roles include {cities_str}. Each city specializes in different sectors, like Bangalore for Software and Mumbai for Data.")
+
+    if response_parts:
+        return " ".join(response_parts)
+
+    # 4. Keyword Fallbacks
     if "skill" in question and "gap" in question:
-        return "I can help analyze your skills gap! Use the Skills Gap Analysis feature by specifying your target role. I'll compare your current skills with the requirements and provide personalized recommendations."
+        return "I can help analyze your skills gap! Use the Skills Gap Analysis feature to compare your profile with industry requirements and get custom learning paths from Udemy and SWAYAM."
     
     elif "career" in question and "path" in question:
         if skills:
-            return f"Based on your skills ({', '.join(skills[:5])}), I see great potential in software development and data-related roles. Check out the Career Paths feature for detailed suggestions tailored to your profile!"
-        return "To suggest career paths, I need to analyze your resume. Please upload your resume first, and I'll provide personalized career recommendations."
+            return f"Based on your resume skills like {', '.join(skills[:3])}, I recommend checking out the 'Career Match' section for a full breakdown of your best-fit roles."
+        return "To suggest career paths, please upload your resume first! I'll then be able to provide personalized recommendations tailored to your experience."
     
     elif "resume" in question or "improve" in question:
         if resume_data:
-            tips = []
-            if len(skills) < 5:
-                tips.append("Add more technical skills to showcase your capabilities")
-            if len(projects) < 2:
-                tips.append("Include more projects to demonstrate practical experience")
-            tips.append("Use action verbs and quantify achievements where possible")
-            return "Here are some tips to improve your resume:\n• " + "\n• ".join(tips)
-        return "Upload your resume first, and I'll provide specific improvement suggestions!"
+            return "Based on your resume, I suggest: 1) Using action verbs for projects, 2) Quantifying your achievements, and 3) Highlighting your technical stack clearly."
+        return "Upload your resume first, and I'll provide specific tips to make it stand out to recruiters!"
     
-    elif "learn" in question or "study" in question:
-        if skills:
-            return f"Given your current skills in {', '.join(skills[:3])}, I recommend deepening your expertise in these areas while also learning complementary skills. For specific learning paths, use the Skills Gap Analysis with your target role."
-        return "I'd recommend starting with fundamentals: Python for versatility, SQL for data work, and Git for collaboration. What field interests you most?"
-    
-    elif "interview" in question:
-        return "For interview preparation:\n• Review data structures & algorithms (LeetCode)\n• Practice behavioral questions (STAR method)\n• Research the company thoroughly\n• Prepare questions to ask the interviewer\n• Practice explaining your projects clearly"
-    
-    elif "salary" in question or "pay" in question:
-        return "Salary varies by role, location, and experience. For accurate data, check Glassdoor, Levels.fyi, or LinkedIn Salary Insights. Focus on building skills and demonstrating value - compensation follows!"
-    
-    else:
-        # Generic helpful response
-        return f"I'm here to help with your career! You can:\n• Ask about skills gap analysis\n• Get career path suggestions\n• Receive resume improvement tips\n• Learn about interview preparation\n\nWhat would you like to explore?"
+    elif "website" in question or "insightedge" in question:
+        return "InsightEdge is your AI-powered career companion for the Smart City sector. We help you with resume management, skills gap analysis, and networking. What specific tool would you like to learn about?"
+
+    # 5. Default Response
+    return f"I'm here to help with your career! Regarding your interest in '{question}', I recommend using the Roadmap or Peer Network tools for more detailed insights."
 
 
 # ============ Run Server ============
