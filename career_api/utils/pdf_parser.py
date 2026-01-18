@@ -1,7 +1,7 @@
 """
 PDF Parser - Extract text from PDF files using PyMuPDF
 """
-const API_URL = import.meta.env.VITE_API_URL;
+
 import fitz  # PyMuPDF
 import re
 from typing import Dict
